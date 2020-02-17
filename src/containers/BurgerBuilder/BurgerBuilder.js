@@ -107,30 +107,31 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinue = () => {
-        this.setState({loading: true});
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.total,
-            customer: {
-                name: 'Test user',
-                address: {
-                    street: 'test street',
-                    zipCode: '345532',
-                    country: 'USA'
-                },
-                email: 'test@test.com'
-            },
-            deliveryMethod: 'UPS',
-        };
-        orderAxios.post('/orders.json', order)
-            .then(response => {
-                this.setState({loading: false, purchasing: false});
-            })
-            .catch(error => {
-                this.setState({loading: false, purchasing: false});
-                console.log(error);
-            });
+        // this.setState({loading: true});
+        // const order = {
+        //     ingredients: this.state.ingredients,
+        //     price: this.state.total,
+        //     customer: {
+        //         name: 'Test user',
+        //         address: {
+        //             street: 'test street',
+        //             zipCode: '345532',
+        //             country: 'USA'
+        //         },
+        //         email: 'test@test.com'
+        //     },
+        //     deliveryMethod: 'UPS',
+        // };
+        // orderAxios.post('/orders.json', order)
+        //     .then(response => {
+        //         this.setState({loading: false, purchasing: false});
+        //     })
+        //     .catch(error => {
+        //         this.setState({loading: false, purchasing: false});
+        //         console.log(error);
+        //     });
         let queryString = this.queryParamsBuilder(this.state.ingredients);
+        queryString += '&price='+this.state.total;
         this.props.history.push({
                 pathname: '/checkout',
                 search: '?' + queryString,

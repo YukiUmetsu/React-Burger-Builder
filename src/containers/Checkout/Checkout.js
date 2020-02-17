@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import CheckoutSummary from '../../components/Order/CheckoutSummary';
+import { Route } from 'react-router-dom';
+import ContactData from "./ContactData/ContactData";
 
 class Checkout extends Component {
     constructor(props){
@@ -10,7 +12,8 @@ class Checkout extends Component {
                 meat: 1,
                 cheese: 1,
                 bacon: 1
-            }
+            },
+            price: 0
         };
     }
 
@@ -23,9 +26,11 @@ class Checkout extends Component {
         return obj;
     }
 
-    componentDidMount() {
+    componentWillMount() {
         let newIngredients = this.objectBuilderFromURL();
-        this.setState({ingredients: newIngredients});
+        let price = newIngredients.price;
+        delete newIngredients.price;
+        this.setState({ingredients: newIngredients, price: price});
     }
 
     checkoutCancelledHandler = () => {
@@ -43,6 +48,10 @@ class Checkout extends Component {
                     ingredients={this.state.ingredients}
                     checkoutCancelled={this.checkoutCancelledHandler}
                     checkoutContinued={this.checkoutContinuedHandler}
+                />
+                <Route
+                    path={this.props.match.path + '/contact-data'}
+                    render={(props) => (<ContactData ingredients={this.state.ingredients} price={this.state.price} {...props}/>)}
                 />
             </div>
         );
