@@ -1,4 +1,11 @@
-const inputHelper = (placeholder='', value='', elementType='input', type='text', options=[]) => {
+const inputHelper = (
+    validation = [],
+    placeholder='',
+    value='',
+    elementType='input',
+    type='text',
+    options=[]
+) => {
 
     let config = {
         elementType: elementType,
@@ -7,10 +14,18 @@ const inputHelper = (placeholder='', value='', elementType='input', type='text',
             placeholder: placeholder,
         },
         value: '',
+        valid: false,
+        touched: false,
     };
+    if(config.elementType === 'select'){
+        config.valid = true;
+    }
 
     if(options.length > 0){
         config.elementConfig['options'] = options;
+    }
+    if(Object.keys(validation).length > 0){
+        config['validation'] = validation
     }
 
     return config;

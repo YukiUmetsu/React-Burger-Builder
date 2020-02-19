@@ -5,6 +5,7 @@ import orderAxios from "../../../axios/axios-orders";
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import InputConfigBuilder from '../../../components/UI/Input/InputHelper';
+import order from "../../../components/Order/Order";
 
 class ContactData extends Component {
 
@@ -14,15 +15,24 @@ class ContactData extends Component {
             {value: 'fastest', displayValue: 'Fastest'},
             {value: 'cheapest', displayValue: 'Cheapest'}
         ];
+        let basicValidation = {
+          required: true,
+        };
+        let zipCodeValidation = {
+            required: true,
+            minLength: 5,
+            maxLength: 7
+        };
         this.state = {
             loading: false,
+            formIsValid: false,
             orderForm: {
-                name: InputConfigBuilder('your name'),
-                street: InputConfigBuilder('your street'),
-                zipCode: InputConfigBuilder('your zip'),
-                country: InputConfigBuilder('your country'),
-                email: InputConfigBuilder('your email','','email'),
-                deliveryMethod: InputConfigBuilder('delivery method','','select','', deliveryOptions),
+                name: InputConfigBuilder(basicValidation,'your name'),
+                street: InputConfigBuilder(basicValidation,'your street'),
+                zipCode: InputConfigBuilder(zipCodeValidation,'your zip'),
+                country: InputConfigBuilder(basicValidation,'your country'),
+                email: InputConfigBuilder(basicValidation,'your email','','email'),
+                deliveryMethod: InputConfigBuilder({},'delivery method','fastest','select','', deliveryOptions),
             }
         };
     }
@@ -55,6 +65,33 @@ class ContactData extends Component {
             });
     };
 
+    checkValidity(element) {
+        let value = element.value;
+        let rules = element.validation;
+        let isValid = true;
+
+        if(element.elementType === 'select'){
+            return true;
+        }
+
+        if(typeof(rules) == 'undefined'){
+            return isValid;
+        }
+
+        if(rules.required){
+            isValid = value.trim() !== '';
+        }
+
+        if(isValid && rules.minLength){
+            isValid = value.trim().length >= rules.minLength;
+        }
+
+        if(isValid && rules.maxLength){
+            isValid = value.trim().length <= rules.maxLength;
+        }
+        return isValid;
+    }
+
     inputChangedHandler = (event,inputIdentifier) => {
         const updatedOrderForm = {
             ...this.state.orderForm
@@ -63,9 +100,22 @@ class ContactData extends Component {
             ...updatedOrderForm[inputIdentifier]
         };
         updatedFormElement.value = event.target.value;
+        updatedFormElement.touched = true;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement);
         updatedOrderForm[inputIdentifier] = updatedFormElement;
-        this.setState({orderForm: updatedOrderForm});
+
+        this.setState({orderForm: updatedOrderForm, formIsValid: this.checkFormValidity(updatedOrderForm)});
     };
+
+    checkFormValidity(orderForm){
+        let formIsValid = true;
+        for (let inputIdentifier in orderForm){
+            if(!orderForm[inputIdentifier].valid){
+                formIsValid = false;
+            }
+        }
+        return formIsValid;
+    }
 
     render(){
         const formElementArray = [];
@@ -85,9 +135,17 @@ class ContactData extends Component {
                         elementConfig={formElement.config.elementConfig}
                         value={formElement.config.value}
                         changed={(event)=>{this.inputChangedHandler(event,formElement.id)}}
+                        invalid={!formElement.config.valid}
+                        shouldValidate={formElement.config.validation}
+                        touched={formElement.config.touched}
                     />
                 })}
-                <Button btnType="Success" clicked={this.orderHandler}>Confirm</Button>
+                <Button
+                    btnType="Success"
+                    clicked={this.orderHandler}
+                    disabled={!this.state.formIsValid}>
+                    Confirm
+                </Button>
             </form>);
 
         if(this.state.loading){
