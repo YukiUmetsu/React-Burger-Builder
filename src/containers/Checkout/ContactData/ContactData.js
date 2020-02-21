@@ -6,6 +6,8 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import InputConfigBuilder from '../../../components/UI/Input/InputHelper';
 import { connect } from 'react-redux';
+import withErrorHandler from "../../../hoc/WithErrorHandler/WithErrorHandler";
+import * as actions from '../../../store/actions/index';
 
 class ContactData extends Component {
 
@@ -23,8 +25,8 @@ class ContactData extends Component {
             minLength: 5,
             maxLength: 7
         };
+
         this.state = {
-            loading: false,
             formIsValid: false,
             orderForm: {
                 name: InputConfigBuilder(basicValidation,'your name'),
@@ -54,15 +56,7 @@ class ContactData extends Component {
             datetime: new Date().toLocaleString(),
         };
 
-        orderAxios.post('/orders.json', order)
-            .then(response => {
-                this.setState({loading: false});
-                this.props.history.push('/');
-            })
-            .catch(error => {
-                this.setState({loading: false});
-                console.log(error);
-            });
+        this.props.onOrderBurger(order);
     };
 
     checkValidity(element) {
@@ -148,7 +142,7 @@ class ContactData extends Component {
                 </Button>
             </form>);
 
-        if(this.state.loading){
+        if(this.props.loading){
             form = <Spinner/>
         }
         return (
@@ -162,9 +156,16 @@ class ContactData extends Component {
 
 const mapStateToProps = state => {
     return {
-        ing: state.ingredients,
-        price: state.total,
+        ing: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.total,
+        loading: state.order.loading,
     };
 };
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch => {
+    return {
+        onOrderBurger: (orderData) => dispatch(actions.purchaseBurger(orderData))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, orderAxios));
