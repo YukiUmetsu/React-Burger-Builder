@@ -8,6 +8,7 @@ import InputConfigBuilder from '../../../components/UI/Input/InputHelper';
 import { connect } from 'react-redux';
 import withErrorHandler from "../../../hoc/WithErrorHandler/WithErrorHandler";
 import * as actions from '../../../store/actions/index';
+import checkFormElementValidity from "../../../components/Utility/checkFormElementValidity";
 
 class ContactData extends Component {
 
@@ -19,6 +20,10 @@ class ContactData extends Component {
         ];
         let basicValidation = {
           required: true,
+        };
+        let emailValidation = {
+          required: true,
+          isEmail: true,
         };
         let zipCodeValidation = {
             required: true,
@@ -33,7 +38,7 @@ class ContactData extends Component {
                 street: InputConfigBuilder(basicValidation,'your street'),
                 zipCode: InputConfigBuilder(zipCodeValidation,'your zip'),
                 country: InputConfigBuilder(basicValidation,'your country'),
-                email: InputConfigBuilder(basicValidation,'your email','','email'),
+                email: InputConfigBuilder(emailValidation,'your email','','email'),
                 deliveryMethod: InputConfigBuilder({},'delivery method','fastest','select','', deliveryOptions),
             }
         };
@@ -59,33 +64,6 @@ class ContactData extends Component {
         this.props.onOrderBurger(order);
     };
 
-    checkValidity(element) {
-        let value = element.value;
-        let rules = element.validation;
-        let isValid = true;
-
-        if(element.elementType === 'select'){
-            return true;
-        }
-
-        if(typeof(rules) == 'undefined'){
-            return isValid;
-        }
-
-        if(rules.required){
-            isValid = value.trim() !== '';
-        }
-
-        if(isValid && rules.minLength){
-            isValid = value.trim().length >= rules.minLength;
-        }
-
-        if(isValid && rules.maxLength){
-            isValid = value.trim().length <= rules.maxLength;
-        }
-        return isValid;
-    }
-
     inputChangedHandler = (event,inputIdentifier) => {
         const updatedOrderForm = {
             ...this.state.orderForm
@@ -95,7 +73,7 @@ class ContactData extends Component {
         };
         updatedFormElement.value = event.target.value;
         updatedFormElement.touched = true;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement);
+        updatedFormElement.valid = checkFormElementValidity(updatedFormElement);
         updatedOrderForm[inputIdentifier] = updatedFormElement;
 
         this.setState({orderForm: updatedOrderForm, formIsValid: this.checkFormValidity(updatedOrderForm)});
