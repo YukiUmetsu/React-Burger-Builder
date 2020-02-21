@@ -1,10 +1,11 @@
 import * as actionTypes from "./actionsTypes";
 import axios from "axios";
 
-export const authSuccess = (authData) => {
+export const authSuccess = (token, userId) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
-        authData: authData
+        idToken: token,
+        userId: userId,
     }
 };
 
@@ -21,7 +22,28 @@ export const authStart = () => {
     }
 };
 
-export const auth = (email, password) => {
+export const logOut = () => {
+    return {
+        type: actionTypes.AUTH_LOGOUT,
+    };
+};
+
+export const checkAuthTimeout = (expirationTime) => {
+    return dispatch => {
+        setTimeout(() => {
+            dispatch(logOut());
+        }, expirationTime*1000);
+    };
+};
+
+export const setAuthRedirectPath = (path) => {
+    return {
+        type: actionTypes.SET_AUTH_REDIRECT_PATH,
+        path: path,
+    }
+};
+
+export const auth = (email, password, isSignUp) => {
     return dispatch => {
         dispatch(authStart());
         let authData = {
@@ -29,14 +51,18 @@ export const auth = (email, password) => {
             password: password,
             returnSecureToken: true,
         };
-        let postURL = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?'+process.env.REACT_APP_GOOGLE_API_KEY;
+        let postURL = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+process.env.REACT_APP_GOOGLE_API_KEY;
+        if(!isSignUp){
+            postURL = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+process.env.REACT_APP_GOOGLE_API_KEY;
+        }
+        console.log(postURL);
         axios.post(postURL, authData)
             .then((response) => {
-
-                dispatch(authSuccess(response.data));
+                dispatch(authSuccess(response.data.idToken, response.data.localId));
+                dispatch(checkAuthTimeout(response.data.expiresIn))
             })
             .catch((err)=>{
-                dispatch(authFail(err));
+                dispatch(authFail(err.response.data.error));
             })
     }
 };

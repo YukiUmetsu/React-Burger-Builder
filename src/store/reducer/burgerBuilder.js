@@ -12,6 +12,7 @@ const initialSate = {
     ingredients: null,
     total: 4,
     error: false,
+    building: false,
 };
 
 const addIngredient = (state, action) => {
@@ -20,6 +21,7 @@ const addIngredient = (state, action) => {
     const updatedState = {
         ingredients: updatedIngredients,
         total: state.total + INGREDIENT_PRICES[action.ingredientName],
+        building: true,
     };
     return updateObject(state, updatedState);
 };
@@ -30,6 +32,7 @@ const removeIngredient = (state, action) => {
     const updatedStateRemove = {
         ingredients: updatedIngredientsRemove,
         total: state.total - INGREDIENT_PRICES[action.ingredientName],
+        building: true,
     };
     return updateObject(state, updatedStateRemove);
 };
@@ -39,6 +42,7 @@ const setIngredients = (state, action) => {
         ingredients: action.ingredients,
         total: calculateSum(action.ingredients),
         error: false,
+        building: false,
     };
     return updateObject(state, updatedStateSet);
 };

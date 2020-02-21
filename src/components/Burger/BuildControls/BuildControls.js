@@ -10,6 +10,12 @@ const controls = [
 ];
 
 const buildControls = (props) => {
+
+    let conditionalButton = (props.isAuth) ?
+        <button className={classes.OrderButton} disabled={!props.validForPurchase} onClick={props.ordered}>Order Now</button>:
+        <button className={classes.OrderButton}  onClick={props.ordered}>Sign up to order</button>;
+
+
     return (
         <div className={classes.BuildControls}>
             <p>Current Price: <strong>${Math.round(props.price,2)}</strong></p>
@@ -22,12 +28,7 @@ const buildControls = (props) => {
                         lessBtnDisabled={props.lessBtnDisabled[ctrl.type]}
                 />
             })}
-            <button
-                className={classes.OrderButton}
-                disabled={!props.validForPurchase}
-                onClick={props.ordered}>
-                Order Now
-            </button>
+            {conditionalButton}
         </div>
     );
 };
