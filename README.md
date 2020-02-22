@@ -3,6 +3,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## .env needed 
 REACT_APP_GOOGLE_API_KEY=XXXXXX
 REACT_APP_CRYPTO_SECRET=XXXXXX
+REACT_APP_NODE_ENV=development
 
 ## Available Scripts
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from '../../components/UI/Button/Button';
 import InputConfigBuilder from '../../components/UI/Input/InputHelper';
 import * as actions from '../../store/actions/index';
-import checkFormElementValidity from "../../components/Utility/checkFormElementValidity";
+import checkFormElementValidity from "../../utility/checkFormElementValidity";
 import Spinner from '../../components/UI/Spinner/Spinner';
 import Input from '../../components/UI/Input/Input';
 import { connect } from 'react-redux';

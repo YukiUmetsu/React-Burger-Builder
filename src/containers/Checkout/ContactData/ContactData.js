@@ -8,7 +8,7 @@ import InputConfigBuilder from '../../../components/UI/Input/InputHelper';
 import { connect } from 'react-redux';
 import withErrorHandler from "../../../hoc/WithErrorHandler/WithErrorHandler";
 import * as actions from '../../../store/actions/index';
-import checkFormElementValidity from "../../../components/Utility/checkFormElementValidity";
+import checkFormElementValidity from "../../../utility/checkFormElementValidity";
 
 class ContactData extends Component {
 
@@ -58,6 +58,7 @@ class ContactData extends Component {
             ingredients: this.props.ing,
             price: this.props.price,
             orderData: formData,
+            userId: this.props.userId,
             datetime: new Date().toLocaleString(),
         };
 
@@ -138,6 +139,7 @@ const mapStateToProps = state => {
         price: state.burgerBuilder.total,
         loading: state.order.loading,
         token: state.auth.token,
+        userId: state.auth.userId,
     };
 };
 
